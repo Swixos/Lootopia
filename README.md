@@ -1,5 +1,11 @@
 # 🏆 Lootopia
 
+[![Pipeline Status](https://gitlab.com/votre-groupe/lootopia/badges/main/pipeline.svg)](https://gitlab.com/votre-groupe/lootopia/-/pipelines)
+[![Coverage](https://gitlab.com/votre-groupe/lootopia/badges/main/coverage.svg)](https://gitlab.com/votre-groupe/lootopia/-/graphs/main/charts)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen)](https://nodejs.org/)
+[![pnpm](https://img.shields.io/badge/pnpm-%3E%3D8.0.0-orange)](https://pnpm.io/)
+
 **Plateforme de chasses au trésor numériques** - Projet Mastère Développement Full Stack
 
 Lootopia est une application innovante mêlant géolocalisation, gamification et réalité augmentée pour créer des expériences de chasses au trésor interactives.
@@ -13,6 +19,7 @@ Lootopia est une application innovante mêlant géolocalisation, gamification et
 - [Utilisation](#-utilisation)
 - [Développement](#-développement)
 - [Tests](#-tests)
+- [CI/CD](#-cicd)
 - [Déploiement](#-déploiement)
 - [Structure du projet](#-structure-du-projet)
 - [Bonnes pratiques](#-bonnes-pratiques)
@@ -119,20 +126,40 @@ Modifier les fichiers `.env` selon vos besoins.
 
 ## 🎮 Utilisation
 
-### Développement local (avec Docker)
+### Développement local (avec Docker) - Recommandé
+
+**Mode développement** : Hot-reload activé, volumes montés, installations automatiques
 
 ```bash
-# Démarrer tous les services (base de données, backend, frontend)
+# Premier lancement (installe les dépendances)
+docker-compose up
+
+# Lancements suivants (plus rapide)
 docker-compose up
 
 # Ou en arrière-plan
 docker-compose up -d
+
+# Voir les logs
+docker-compose logs -f backend
+docker-compose logs -f frontend
+
+# Arrêter les services
+docker-compose down
 ```
+
+**Note** : Au premier lancement, l'installation des dépendances peut prendre quelques minutes. Les lancements suivants seront beaucoup plus rapides grâce aux volumes Docker.
 
 Accès aux services :
 - **Frontend** : http://localhost:4200
 - **Backend API** : http://localhost:3000/api
 - **Base de données** : localhost:3306
+
+**Avantages du mode Docker dev** :
+- ✅ Environnement isolé et reproductible
+- ✅ Base de données MariaDB incluse et configurée
+- ✅ Hot-reload (modifications détectées automatiquement)
+- ✅ Pas besoin d'installer Node.js, pnpm ou MariaDB localement
 
 ### Développement local (sans Docker)
 
@@ -285,9 +312,159 @@ pnpm --filter @lootopia/backend test:e2e
 pnpm test:cov
 ```
 
+## 🔄 CI/CD
+
+Le projet utilise **GitLab CI/CD** pour l'intégration et le déploiement continus.
+
+### Stages du pipeline
+
+Le pipeline est organisé en 6 stages :
+
+```
+install → lint → test → build → security → deploy
+```
+
+#### 1. **Install** - Installation des dépendances
+- Installation via pnpm avec cache intelligent
+- Basé sur `pnpm-lock.yaml`
+
+#### 2. **Lint** - Vérification du code
+- ✅ ESLint - Qualité du code
+- ✅ Prettier - Formatage
+
+#### 3. **Test** - Tests automatisés
+- ✅ Tests unitaires backend (avec MariaDB)
+- ✅ Tests e2e backend
+- ✅ Tests unitaires frontend
+- 📊 Rapports de couverture automatiques
+
+#### 4. **Build** - Compilation
+- 🏗️ Build backend (NestJS)
+- 🏗️ Build frontend (Angular)
+- 🐳 Build images Docker (sur `main`)
+
+#### 5. **Security** - Analyses de sécurité
+- 🔒 pnpm audit - Vulnérabilités des dépendances
+- 🔐 Secret detection - Détection de secrets
+- 🛡️ SAST, Dependency Scanning (GitLab Ultimate)
+
+#### 6. **Deploy** - Déploiements
+- 🚀 Staging (manuel sur `develop`)
+- 🚀 Production (manuel sur `main` ou tags)
+
+### Déclenchement des pipelines
+
+**Automatique** :
+- Merge Requests
+- Push sur `main`, `develop`, `claude/**`
+
+**Manuel** :
+- Via l'interface GitLab : CI/CD > Pipelines > Run pipeline
+- Déploiements toujours manuels
+
+```bash
+# Créer une release
+git tag v1.0.0
+git push origin v1.0.0
+
+# Un pipeline se déclenche automatiquement
+# Le déploiement reste manuel
+```
+
+### Artifacts et rapports
+
+Les pipelines génèrent automatiquement :
+- 📊 **Couverture de code** : Rapports Cobertura et JUnit
+- 📦 **Builds** : Applications compilées (7 jours)
+- 🧪 **Test results** : Résultats des tests (30 jours)
+- 🐳 **Images Docker** : Poussées vers GitLab Container Registry
+
+### Configuration
+
+**Variables CI/CD requises** (Settings > CI/CD > Variables) :
+
+```bash
+# SSH
+SSH_PRIVATE_KEY        # Clé SSH privée (Protected, Masked)
+SSH_KNOWN_HOSTS        # Contenu du known_hosts
+DEPLOY_USER            # Utilisateur SSH
+
+# Environnements
+DEPLOY_HOST_STAGING    # Serveur staging
+DEPLOY_HOST_PRODUCTION # Serveur production
+```
+
+**Générer les clés SSH** :
+```bash
+ssh-keygen -t ed25519 -C "gitlab-ci@lootopia" -f gitlab-ci-key
+ssh-copy-id -i gitlab-ci-key.pub deploy@your-server.com
+```
+
+### Badges de statut
+
+Mettre à jour les URLs des badges dans le README avec votre URL GitLab :
+- Pipeline : `https://gitlab.com/votre-groupe/lootopia/badges/main/pipeline.svg`
+- Coverage : `https://gitlab.com/votre-groupe/lootopia/badges/main/coverage.svg`
+
+**Documentation complète** : [CICD.md](CICD.md)
+
 ## 🚢 Déploiement
 
-### Build de production
+### Déploiement en Production avec Docker
+
+#### 1. Configuration des variables d'environnement
+
+```bash
+# Copier le fichier d'exemple
+cp .env.production.example .env.production
+
+# Éditer et remplir avec les vraies valeurs de production
+nano .env.production
+```
+
+⚠️ **CRITIQUE** : Modifier les valeurs suivantes :
+- `JWT_SECRET` : Générer avec `openssl rand -base64 32`
+- `DB_PASSWORD` : Mot de passe fort pour la base de données
+- `DB_ROOT_PASSWORD` : Mot de passe root fort
+- `CORS_ORIGIN` : Domaine exact du frontend (ex: https://lootopia.com)
+- `BCRYPT_ROUNDS` : 12 minimum en production
+
+#### 2. Build et déploiement
+
+```bash
+# Charger les variables d'environnement de production
+export $(cat .env.production | xargs)
+
+# Build des images de production (optimisées, multi-stage)
+docker-compose -f docker-compose.prod.yml build
+
+# Déployer en production
+docker-compose -f docker-compose.prod.yml up -d
+
+# Vérifier les logs
+docker-compose -f docker-compose.prod.yml logs -f
+
+# Vérifier l'état des services
+docker-compose -f docker-compose.prod.yml ps
+```
+
+#### 3. Maintenance en production
+
+```bash
+# Voir les logs
+docker-compose -f docker-compose.prod.yml logs -f [service]
+
+# Redémarrer un service
+docker-compose -f docker-compose.prod.yml restart [service]
+
+# Arrêter tous les services
+docker-compose -f docker-compose.prod.yml down
+
+# Mettre à jour (après modifications)
+docker-compose -f docker-compose.prod.yml up -d --build
+```
+
+### Build manuel (sans Docker)
 
 ```bash
 # Build tous les projets
@@ -296,24 +473,13 @@ pnpm build
 # Ou individuellement
 pnpm --filter @lootopia/backend build
 pnpm --filter @lootopia/frontend build
+
+# Démarrer le backend en production
+cd apps/backend
+NODE_ENV=production node dist/main.js
+
+# Servir le frontend avec nginx (voir nginx.conf)
 ```
-
-### Docker Production
-
-```bash
-# Build des images
-docker-compose -f docker-compose.prod.yml build
-
-# Déployer
-docker-compose -f docker-compose.prod.yml up -d
-```
-
-### Variables d'environnement production
-
-⚠️ **Important** : Modifier les valeurs suivantes en production :
-- `JWT_SECRET` : Clé secrète forte
-- `DB_PASSWORD` : Mot de passe fort
-- `CORS_ORIGIN` : Domaine du frontend
 
 ## 📁 Structure du projet
 
