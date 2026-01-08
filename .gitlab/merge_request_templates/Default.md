@@ -1,6 +1,6 @@
 # Description
 
-Brève description des changements apportés par cette PR.
+Brève description des changements apportés par cette merge request.
 
 ## Type de changement
 
@@ -8,7 +8,7 @@ Brève description des changements apportés par cette PR.
 - [ ] ✨ Nouvelle fonctionnalité (changement qui ajoute une fonctionnalité)
 - [ ] 💥 Breaking change (fix ou feature qui casserait la compatibilité)
 - [ ] 📝 Documentation (mise à jour de la documentation uniquement)
-- [ ] 🎨 Style (formatage, points-virgules manquants, etc.)
+- [ ] 🎨 Style (formatage, points-virgules, etc.)
 - [ ] ♻️ Refactoring (ni fix ni feature)
 - [ ] ⚡ Performance (amélioration des performances)
 - [ ] ✅ Tests (ajout ou modification de tests)
@@ -33,7 +33,6 @@ Décrivez en détail les changements effectués :
 
 ## Issues liées
 
-Fixes #(issue)
 Closes #(issue)
 Related to #(issue)
 
@@ -74,7 +73,7 @@ Décrivez comment tester manuellement vos changements :
 
 ## Performance
 
-Cette PR a-t-elle un impact sur les performances ?
+Cette MR a-t-elle un impact sur les performances ?
 
 - [ ] Non
 - [ ] Oui - amélioration
@@ -84,7 +83,7 @@ Détails :
 
 ## Sécurité
 
-Cette PR a-t-elle des implications de sécurité ?
+Cette MR a-t-elle des implications de sécurité ?
 
 - [ ] Non
 - [ ] Oui (détailler ci-dessous)
@@ -93,12 +92,12 @@ Détails :
 
 ## Breaking Changes
 
-Cette PR introduit-elle des breaking changes ?
+Cette MR introduit-elle des breaking changes ?
 
 - [ ] Non
 - [ ] Oui (détailler ci-dessous et documenter la migration)
 
-### Migration
+### Guide de migration
 
 Si breaking changes, comment les utilisateurs doivent-ils migrer ?
 
@@ -125,5 +124,8 @@ Des actions spéciales sont-elles nécessaires lors du déploiement ?
 Détails :
 
 ---
+
+/assign @maintainer
+/label ~needs-review
 
 **Note** : Assurez-vous que toutes les pipelines CI passent avant de demander une revue ! ✅

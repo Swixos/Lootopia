@@ -8,7 +8,7 @@ Merci de votre intérêt pour contribuer à Lootopia ! Ce guide vous explique co
 - [Workflow de contribution](#workflow-de-contribution)
 - [Configuration de l'environnement](#configuration-de-lenvironnement)
 - [Standards de code](#standards-de-code)
-- [Process de Pull Request](#process-de-pull-request)
+- [Process de Merge Request](#process-de-merge-request)
 - [Tests](#tests)
 - [Commits](#commits)
 
@@ -24,13 +24,13 @@ Merci de votre intérêt pour contribuer à Lootopia ! Ce guide vous explique co
 ### 1. Fork et Clone
 
 ```bash
-# Fork le projet sur GitHub
+# Fork le projet sur GitLab
 # Puis cloner votre fork
-git clone https://github.com/VOTRE_USERNAME/Lootopia.git
-cd Lootopia
+git clone https://gitlab.com/VOTRE_USERNAME/lootopia.git
+cd lootopia
 
 # Ajouter le remote upstream
-git remote add upstream https://github.com/Swixos/Lootopia.git
+git remote add upstream https://gitlab.com/votre-groupe/lootopia.git
 ```
 
 ### 2. Créer une branche
@@ -94,13 +94,14 @@ git add .
 git commit -m "feat: ajouter authentification JWT"
 ```
 
-### 6. Push et Pull Request
+### 6. Push et Merge Request
 
 ```bash
 # Push vers votre fork
 git push origin feature/ma-nouvelle-fonctionnalite
 
-# Créer une Pull Request sur GitHub
+# Créer une Merge Request sur GitLab
+# Aller sur votre fork > Merge Requests > New merge request
 ```
 
 ## 🛠️ Configuration de l'environnement
@@ -208,7 +209,7 @@ auth/
 └── auth.module.ts
 ```
 
-## 🔍 Process de Pull Request
+## 🔍 Process de Merge Request
 
 ### Avant de soumettre
 
@@ -219,32 +220,18 @@ auth/
 - [ ] La documentation est à jour
 - [ ] Les commits suivent la convention
 
-### Template de PR
+### Template de MR
 
-```markdown
-## Description
-Brève description de vos changements
+Un template de Merge Request est disponible dans `.gitlab/merge_request_templates/Default.md`
 
-## Type de changement
-- [ ] Bug fix
-- [ ] Nouvelle fonctionnalité
-- [ ] Breaking change
-- [ ] Documentation
-
-## Checklist
-- [ ] Tests ajoutés/mis à jour
-- [ ] Documentation mise à jour
-- [ ] Pas de warnings de build
-- [ ] Code review effectué
-
-## Screenshots (si applicable)
-```
+Il sera automatiquement proposé lors de la création d'une MR.
 
 ### Revue de code
 
-- Les PRs nécessitent au moins 1 approbation
+- Les MRs nécessitent au moins 1 approbation
 - Les commentaires de review doivent être adressés
 - Les pipelines CI doivent passer (vert ✅)
+- Utiliser les labels appropriés (`~bug`, `~enhancement`, etc.)
 
 ## ✅ Tests
 

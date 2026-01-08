@@ -1,8 +1,7 @@
 # 🏆 Lootopia
 
-[![CI/CD Pipeline](https://github.com/Swixos/Lootopia/workflows/CI%2FCD%20Pipeline/badge.svg)](https://github.com/Swixos/Lootopia/actions/workflows/ci.yml)
-[![Security Checks](https://github.com/Swixos/Lootopia/workflows/Security%20Checks/badge.svg)](https://github.com/Swixos/Lootopia/actions/workflows/security.yml)
-[![Deploy](https://github.com/Swixos/Lootopia/workflows/Deploy%20to%20Production/badge.svg)](https://github.com/Swixos/Lootopia/actions/workflows/deploy.yml)
+[![Pipeline Status](https://gitlab.com/votre-groupe/lootopia/badges/main/pipeline.svg)](https://gitlab.com/votre-groupe/lootopia/-/pipelines)
+[![Coverage](https://gitlab.com/votre-groupe/lootopia/badges/main/coverage.svg)](https://gitlab.com/votre-groupe/lootopia/-/graphs/main/charts)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen)](https://nodejs.org/)
 [![pnpm](https://img.shields.io/badge/pnpm-%3E%3D8.0.0-orange)](https://pnpm.io/)
@@ -315,98 +314,99 @@ pnpm test:cov
 
 ## 🔄 CI/CD
 
-Le projet utilise **GitHub Actions** pour l'intégration et le déploiement continus.
+Le projet utilise **GitLab CI/CD** pour l'intégration et le déploiement continus.
 
-### Pipelines disponibles
+### Stages du pipeline
 
-#### 1. CI/CD Pipeline (`.github/workflows/ci.yml`)
-**Automatique sur chaque push et PR**
+Le pipeline est organisé en 6 stages :
 
-- ✅ Installation et cache des dépendances
-- ✅ Lint (ESLint + Prettier)
-- ✅ Tests unitaires (Backend + Frontend)
-- ✅ Tests e2e (Backend avec MariaDB)
-- ✅ Build de production
-- ✅ Build des images Docker (sur `main`)
-
-**Déclenchement** : Push sur `main`, `develop`, `claude/**` ou PR
-
-```bash
-# Voir l'état de la CI
-gh workflow view ci.yml
-
-# Lancer manuellement
-gh workflow run ci.yml
+```
+install → lint → test → build → security → deploy
 ```
 
-#### 2. Deploy Pipeline (`.github/workflows/deploy.yml`)
-**Déploiement en production**
+#### 1. **Install** - Installation des dépendances
+- Installation via pnpm avec cache intelligent
+- Basé sur `pnpm-lock.yaml`
 
-- 🐳 Build et push des images Docker vers GHCR
-- 🚀 Déploiement vers production/staging
-- ✅ Health checks post-déploiement
+#### 2. **Lint** - Vérification du code
+- ✅ ESLint - Qualité du code
+- ✅ Prettier - Formatage
 
-**Déclenchement** :
-- Manuel via `workflow_dispatch`
-- Tags de version (`v*.*.*`)
+#### 3. **Test** - Tests automatisés
+- ✅ Tests unitaires backend (avec MariaDB)
+- ✅ Tests e2e backend
+- ✅ Tests unitaires frontend
+- 📊 Rapports de couverture automatiques
+
+#### 4. **Build** - Compilation
+- 🏗️ Build backend (NestJS)
+- 🏗️ Build frontend (Angular)
+- 🐳 Build images Docker (sur `main`)
+
+#### 5. **Security** - Analyses de sécurité
+- 🔒 pnpm audit - Vulnérabilités des dépendances
+- 🔐 Secret detection - Détection de secrets
+- 🛡️ SAST, Dependency Scanning (GitLab Ultimate)
+
+#### 6. **Deploy** - Déploiements
+- 🚀 Staging (manuel sur `develop`)
+- 🚀 Production (manuel sur `main` ou tags)
+
+### Déclenchement des pipelines
+
+**Automatique** :
+- Merge Requests
+- Push sur `main`, `develop`, `claude/**`
+
+**Manuel** :
+- Via l'interface GitLab : CI/CD > Pipelines > Run pipeline
+- Déploiements toujours manuels
 
 ```bash
-# Déployer manuellement
-gh workflow run deploy.yml -f environment=production
-
 # Créer une release
 git tag v1.0.0
 git push origin v1.0.0
+
+# Un pipeline se déclenche automatiquement
+# Le déploiement reste manuel
 ```
 
-#### 3. Security Pipeline (`.github/workflows/security.yml`)
-**Analyses de sécurité automatiques**
+### Artifacts et rapports
 
-- 🔒 Audit des dépendances (`pnpm audit`)
-- 🔍 CodeQL - Analyse statique du code
-- 🔐 TruffleHog - Détection de secrets
-- 📜 Vérification des licences
-- 🛡️ Snyk - Vulnérabilités (optionnel)
-- 🔎 OWASP Dependency Check (optionnel)
-
-**Déclenchement** :
-- Push/PR sur `main` ou `develop`
-- Hebdomadaire (lundi 8h)
-- Manuel
-
-```bash
-# Lancer le scan de sécurité
-gh workflow run security.yml
-```
-
-### Dependabot
-
-Configuration automatique des mises à jour :
-- 📦 Dépendances npm/pnpm (hebdomadaire)
-- 🔧 GitHub Actions (hebdomadaire)
-- 🐳 Images Docker (hebdomadaire)
-
-Les PRs sont créées automatiquement chaque lundi à 8h.
-
-### Artifacts
-
-Les pipelines génèrent des artifacts :
-- `backend-coverage` - Couverture de code backend
-- `frontend-coverage` - Couverture de code frontend
-- `backend-build` - Build compilé du backend
-- `frontend-build` - Build compilé du frontend
+Les pipelines génèrent automatiquement :
+- 📊 **Couverture de code** : Rapports Cobertura et JUnit
+- 📦 **Builds** : Applications compilées (7 jours)
+- 🧪 **Test results** : Résultats des tests (30 jours)
+- 🐳 **Images Docker** : Poussées vers GitLab Container Registry
 
 ### Configuration
 
-**Secrets requis pour le déploiement** (optionnel) :
-```
-DEPLOY_HOST       # Serveur de déploiement
-DEPLOY_USER       # Utilisateur SSH
-DEPLOY_KEY        # Clé SSH privée
-SNYK_TOKEN        # Token Snyk (si activé)
+**Variables CI/CD requises** (Settings > CI/CD > Variables) :
+
+```bash
+# SSH
+SSH_PRIVATE_KEY        # Clé SSH privée (Protected, Masked)
+SSH_KNOWN_HOSTS        # Contenu du known_hosts
+DEPLOY_USER            # Utilisateur SSH
+
+# Environnements
+DEPLOY_HOST_STAGING    # Serveur staging
+DEPLOY_HOST_PRODUCTION # Serveur production
 ```
 
-**Documentation complète** : [.github/CICD.md](.github/CICD.md)
+**Générer les clés SSH** :
+```bash
+ssh-keygen -t ed25519 -C "gitlab-ci@lootopia" -f gitlab-ci-key
+ssh-copy-id -i gitlab-ci-key.pub deploy@your-server.com
+```
+
+### Badges de statut
+
+Mettre à jour les URLs des badges dans le README avec votre URL GitLab :
+- Pipeline : `https://gitlab.com/votre-groupe/lootopia/badges/main/pipeline.svg`
+- Coverage : `https://gitlab.com/votre-groupe/lootopia/badges/main/coverage.svg`
+
+**Documentation complète** : [CICD.md](CICD.md)
 
 ## 🚢 Déploiement
 
