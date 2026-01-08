@@ -119,20 +119,40 @@ Modifier les fichiers `.env` selon vos besoins.
 
 ## 🎮 Utilisation
 
-### Développement local (avec Docker)
+### Développement local (avec Docker) - Recommandé
+
+**Mode développement** : Hot-reload activé, volumes montés, installations automatiques
 
 ```bash
-# Démarrer tous les services (base de données, backend, frontend)
+# Premier lancement (installe les dépendances)
+docker-compose up
+
+# Lancements suivants (plus rapide)
 docker-compose up
 
 # Ou en arrière-plan
 docker-compose up -d
+
+# Voir les logs
+docker-compose logs -f backend
+docker-compose logs -f frontend
+
+# Arrêter les services
+docker-compose down
 ```
+
+**Note** : Au premier lancement, l'installation des dépendances peut prendre quelques minutes. Les lancements suivants seront beaucoup plus rapides grâce aux volumes Docker.
 
 Accès aux services :
 - **Frontend** : http://localhost:4200
 - **Backend API** : http://localhost:3000/api
 - **Base de données** : localhost:3306
+
+**Avantages du mode Docker dev** :
+- ✅ Environnement isolé et reproductible
+- ✅ Base de données MariaDB incluse et configurée
+- ✅ Hot-reload (modifications détectées automatiquement)
+- ✅ Pas besoin d'installer Node.js, pnpm ou MariaDB localement
 
 ### Développement local (sans Docker)
 
@@ -287,7 +307,61 @@ pnpm test:cov
 
 ## 🚢 Déploiement
 
-### Build de production
+### Déploiement en Production avec Docker
+
+#### 1. Configuration des variables d'environnement
+
+```bash
+# Copier le fichier d'exemple
+cp .env.production.example .env.production
+
+# Éditer et remplir avec les vraies valeurs de production
+nano .env.production
+```
+
+⚠️ **CRITIQUE** : Modifier les valeurs suivantes :
+- `JWT_SECRET` : Générer avec `openssl rand -base64 32`
+- `DB_PASSWORD` : Mot de passe fort pour la base de données
+- `DB_ROOT_PASSWORD` : Mot de passe root fort
+- `CORS_ORIGIN` : Domaine exact du frontend (ex: https://lootopia.com)
+- `BCRYPT_ROUNDS` : 12 minimum en production
+
+#### 2. Build et déploiement
+
+```bash
+# Charger les variables d'environnement de production
+export $(cat .env.production | xargs)
+
+# Build des images de production (optimisées, multi-stage)
+docker-compose -f docker-compose.prod.yml build
+
+# Déployer en production
+docker-compose -f docker-compose.prod.yml up -d
+
+# Vérifier les logs
+docker-compose -f docker-compose.prod.yml logs -f
+
+# Vérifier l'état des services
+docker-compose -f docker-compose.prod.yml ps
+```
+
+#### 3. Maintenance en production
+
+```bash
+# Voir les logs
+docker-compose -f docker-compose.prod.yml logs -f [service]
+
+# Redémarrer un service
+docker-compose -f docker-compose.prod.yml restart [service]
+
+# Arrêter tous les services
+docker-compose -f docker-compose.prod.yml down
+
+# Mettre à jour (après modifications)
+docker-compose -f docker-compose.prod.yml up -d --build
+```
+
+### Build manuel (sans Docker)
 
 ```bash
 # Build tous les projets
@@ -296,24 +370,13 @@ pnpm build
 # Ou individuellement
 pnpm --filter @lootopia/backend build
 pnpm --filter @lootopia/frontend build
+
+# Démarrer le backend en production
+cd apps/backend
+NODE_ENV=production node dist/main.js
+
+# Servir le frontend avec nginx (voir nginx.conf)
 ```
-
-### Docker Production
-
-```bash
-# Build des images
-docker-compose -f docker-compose.prod.yml build
-
-# Déployer
-docker-compose -f docker-compose.prod.yml up -d
-```
-
-### Variables d'environnement production
-
-⚠️ **Important** : Modifier les valeurs suivantes en production :
-- `JWT_SECRET` : Clé secrète forte
-- `DB_PASSWORD` : Mot de passe fort
-- `CORS_ORIGIN` : Domaine du frontend
 
 ## 📁 Structure du projet
 
