@@ -5,6 +5,7 @@ Ce document décrit les pipelines d'intégration continue et de déploiement con
 ## 📋 Vue d'ensemble
 
 Le projet utilise **GitLab CI/CD** pour automatiser :
+
 - ✅ Tests et validation du code
 - ✅ Build des applications
 - ✅ Analyses de sécurité
@@ -28,19 +29,22 @@ install → lint → test → build → security → deploy
 ### 2. **Lint** - Vérification du code
 
 **Jobs** :
+
 - `lint:eslint` - Vérification ESLint
 - `lint:prettier` - Vérification du formatage
 
-**Déclenchement** : MR, main, develop, claude/**
+**Déclenchement** : MR, main, develop, claude/\*\*
 
 ### 3. **Test** - Tests unitaires et e2e
 
 **Jobs** :
+
 - `test:backend:unit` - Tests unitaires backend (avec MariaDB)
 - `test:backend:e2e` - Tests e2e backend
 - `test:frontend:unit` - Tests unitaires frontend
 
 **Features** :
+
 - Service MariaDB 11.6 pour les tests backend
 - Rapports de couverture (Cobertura + JUnit)
 - Badge de couverture automatique
@@ -49,6 +53,7 @@ install → lint → test → build → security → deploy
 ### 4. **Build** - Compilation
 
 **Jobs** :
+
 - `build:backend` - Build NestJS (TypeScript → JavaScript)
 - `build:frontend` - Build Angular (production optimisé)
 
@@ -57,10 +62,12 @@ install → lint → test → build → security → deploy
 ### 5. **Security** - Analyses de sécurité
 
 **Jobs** :
+
 - `security:dependency-scan` - pnpm audit + outdated
 - `security:secret-detection` - Détection de secrets dans l'historique git
 
 **Optionnel (GitLab Ultimate)** :
+
 - SAST (Static Application Security Testing)
 - Secret Detection avancé
 - Dependency Scanning
@@ -69,10 +76,12 @@ install → lint → test → build → security → deploy
 ### 6. **Deploy** - Déploiement
 
 **Environnements** :
+
 - `deploy:staging` - Déploiement staging (manuel sur develop)
 - `deploy:production` - Déploiement production (manuel sur main ou tags)
 
 **Features** :
+
 - Déploiement via SSH
 - Pull des images Docker depuis GitLab Container Registry
 - Exécution des migrations automatique
@@ -96,11 +105,12 @@ Le pipeline s'exécute automatiquement sur :
 - **Merge Requests** : Tous les stages sauf deploy
 - **main branch** : Tous les stages + build Docker
 - **develop branch** : Tous les stages
-- **claude/** branches** : install, lint, test, build
+- **claude/** branches\*\* : install, lint, test, build
 
 ### Déclenchement manuel
 
 Les déploiements sont **toujours manuels** :
+
 - Staging : Bouton manuel dans le pipeline
 - Production : Bouton manuel dans le pipeline
 
@@ -162,12 +172,12 @@ Les rapports de couverture sont automatiquement affichés dans les MR :
 
 ### Artifacts disponibles
 
-| Artifact | Durée | Description |
-|----------|-------|-------------|
-| `node_modules/` | 1 heure | Dépendances installées |
-| `coverage/` | 30 jours | Rapports de couverture |
-| `dist/` | 7 jours | Builds compilés |
-| `test-results/` | 7 days | Résultats des tests e2e |
+| Artifact        | Durée    | Description             |
+| --------------- | -------- | ----------------------- |
+| `node_modules/` | 1 heure  | Dépendances installées  |
+| `coverage/`     | 30 jours | Rapports de couverture  |
+| `dist/`         | 7 jours  | Builds compilés         |
+| `test-results/` | 7 days   | Résultats des tests e2e |
 
 ### Télécharger les artifacts
 
@@ -220,11 +230,13 @@ git push origin v1.0.0
 ### Pipeline échoue
 
 **1. Consulter les logs**
+
 ```
 CI/CD > Pipelines > Cliquer sur le pipeline > Cliquer sur le job
 ```
 
 **2. Reproduire localement**
+
 ```bash
 # Installer les dépendances
 pnpm install
@@ -242,6 +254,7 @@ pnpm build
 ```
 
 **3. Vider le cache**
+
 ```
 CI/CD > Pipelines > Clear runner caches
 ```
@@ -296,6 +309,7 @@ lint:prettier ┼─> test:backend:unit ─┐
 - **Runners dédiés** : Plus rapides, illimités
 
 Pour ajouter un runner dédié :
+
 ```
 Settings > CI/CD > Runners > New project runner
 ```
@@ -327,6 +341,7 @@ Configurer les branches protégées :
 ### Protected variables
 
 Les variables sensibles doivent être :
+
 - **Protected** : Utilisables uniquement sur branches protégées
 - **Masked** : Non visibles dans les logs
 
@@ -339,6 +354,7 @@ CI/CD > Pipelines > Analytics
 ```
 
 Métriques disponibles :
+
 - Durée moyenne des pipelines
 - Taux de succès
 - Fréquence des déploiements
@@ -364,6 +380,7 @@ Ajouter les badges dans votre README :
 ## 🎯 Roadmap
 
 Améliorations futures :
+
 - [ ] Tests de performance (Lighthouse CI)
 - [ ] Tests de charge (k6, Gatling)
 - [ ] Notifications Slack/Discord

@@ -27,6 +27,7 @@ Lootopia est une application innovante mêlant géolocalisation, gamification et
 ## 🚀 Technologies
 
 ### Frontend
+
 - **Angular 21.x** - Framework web moderne
 - **Angular Material 21.x** - Components UI Material Design
 - **TypeScript 5.x** - Langage typé
@@ -34,6 +35,7 @@ Lootopia est une application innovante mêlant géolocalisation, gamification et
 - **RxJS** - Programmation réactive
 
 ### Backend
+
 - **NestJS 11.x** - Framework Node.js progressif
 - **TypeORM** - ORM pour TypeScript
 - **TypeScript 5.x** - Langage typé
@@ -43,9 +45,11 @@ Lootopia est une application innovante mêlant géolocalisation, gamification et
 - **Winston** - Logging
 
 ### Base de données
+
 - **MariaDB 11.6** - Base de données relationnelle
 
 ### DevOps & Outils
+
 - **pnpm** - Gestionnaire de paquets performant
 - **Docker & Docker Compose** - Conteneurisation
 - **ESLint** - Linter JavaScript/TypeScript
@@ -70,6 +74,7 @@ lootopia/
 ### Architecture technique
 
 **Frontend (Angular)**
+
 - Architecture modulaire par fonctionnalités
 - Services centralisés dans `core/`
 - Components réutilisables dans `shared/`
@@ -77,6 +82,7 @@ lootopia/
 - Mobile-first responsive design
 
 **Backend (NestJS)**
+
 - Architecture modulaire
 - RESTful API avec préfixe `/api`
 - Authentification JWT
@@ -151,11 +157,13 @@ docker-compose down
 **Note** : Au premier lancement, l'installation des dépendances peut prendre quelques minutes. Les lancements suivants seront beaucoup plus rapides grâce aux volumes Docker.
 
 Accès aux services :
+
 - **Frontend** : http://localhost:4200
 - **Backend API** : http://localhost:3000/api
 - **Base de données** : localhost:3306
 
 **Avantages du mode Docker dev** :
+
 - ✅ Environnement isolé et reproductible
 - ✅ Base de données MariaDB incluse et configurée
 - ✅ Hot-reload (modifications détectées automatiquement)
@@ -227,6 +235,7 @@ pnpm --filter @lootopia/frontend lint         # Linter
 ### Bonnes pratiques
 
 #### Sécurité (OWASP)
+
 - ✅ Mots de passe hashés avec bcrypt
 - ✅ Authentification JWT avec expiration
 - ✅ Validation des entrées avec class-validator
@@ -234,12 +243,14 @@ pnpm --filter @lootopia/frontend lint         # Linter
 - ✅ Variables sensibles dans .env (gitignored)
 
 #### Clean Code
+
 - ✅ Principes SOLID appliqués
 - ✅ Code modulaire et réutilisable
 - ✅ Typage fort avec TypeScript
 - ✅ Documentation des fonctions complexes
 
 #### Green IT
+
 - ✅ Requêtes optimisées
 - ✅ Lazy loading sur le frontend
 - ✅ Compression gzip configurée (nginx)
@@ -325,40 +336,48 @@ install → lint → test → build → security → deploy
 ```
 
 #### 1. **Install** - Installation des dépendances
+
 - Installation via pnpm avec cache intelligent
 - Basé sur `pnpm-lock.yaml`
 
 #### 2. **Lint** - Vérification du code
+
 - ✅ ESLint - Qualité du code
 - ✅ Prettier - Formatage
 
 #### 3. **Test** - Tests automatisés
+
 - ✅ Tests unitaires backend (avec MariaDB)
 - ✅ Tests e2e backend
 - ✅ Tests unitaires frontend
 - 📊 Rapports de couverture automatiques
 
 #### 4. **Build** - Compilation
+
 - 🏗️ Build backend (NestJS)
 - 🏗️ Build frontend (Angular)
 - 🐳 Build images Docker (sur `main`)
 
 #### 5. **Security** - Analyses de sécurité
+
 - 🔒 pnpm audit - Vulnérabilités des dépendances
 - 🔐 Secret detection - Détection de secrets
 - 🛡️ SAST, Dependency Scanning (GitLab Ultimate)
 
 #### 6. **Deploy** - Déploiements
+
 - 🚀 Staging (manuel sur `develop`)
 - 🚀 Production (manuel sur `main` ou tags)
 
 ### Déclenchement des pipelines
 
 **Automatique** :
+
 - Merge Requests
 - Push sur `main`, `develop`, `claude/**`
 
 **Manuel** :
+
 - Via l'interface GitLab : CI/CD > Pipelines > Run pipeline
 - Déploiements toujours manuels
 
@@ -374,6 +393,7 @@ git push origin v1.0.0
 ### Artifacts et rapports
 
 Les pipelines génèrent automatiquement :
+
 - 📊 **Couverture de code** : Rapports Cobertura et JUnit
 - 📦 **Builds** : Applications compilées (7 jours)
 - 🧪 **Test results** : Résultats des tests (30 jours)
@@ -395,6 +415,7 @@ DEPLOY_HOST_PRODUCTION # Serveur production
 ```
 
 **Générer les clés SSH** :
+
 ```bash
 ssh-keygen -t ed25519 -C "gitlab-ci@lootopia" -f gitlab-ci-key
 ssh-copy-id -i gitlab-ci-key.pub deploy@your-server.com
@@ -403,6 +424,7 @@ ssh-copy-id -i gitlab-ci-key.pub deploy@your-server.com
 ### Badges de statut
 
 Mettre à jour les URLs des badges dans le README avec votre URL GitLab :
+
 - Pipeline : `https://gitlab.com/votre-groupe/lootopia/badges/main/pipeline.svg`
 - Coverage : `https://gitlab.com/votre-groupe/lootopia/badges/main/coverage.svg`
 
@@ -423,6 +445,7 @@ nano .env.production
 ```
 
 ⚠️ **CRITIQUE** : Modifier les valeurs suivantes :
+
 - `JWT_SECRET` : Générer avec `openssl rand -base64 32`
 - `DB_PASSWORD` : Mot de passe fort pour la base de données
 - `DB_ROOT_PASSWORD` : Mot de passe root fort
@@ -527,6 +550,7 @@ lootopia/
 ## 🎯 Fonctionnalités prévues
 
 ### Phase 1 - MVP (M1)
+
 - [ ] Authentification JWT (inscription, connexion)
 - [ ] Gestion des profils utilisateurs
 - [ ] CRUD chasses au trésor
@@ -536,6 +560,7 @@ lootopia/
 - [ ] Système de points/progression
 
 ### Phase 2 - Extensions (M2)
+
 - [ ] Monnaie virtuelle (Couronnes)
 - [ ] Système de notifications
 - [ ] Multi-Factor Authentication (MFA)
@@ -550,6 +575,7 @@ lootopia/
 L'API backend est accessible sur `/api` et retourne du JSON.
 
 **Endpoints principaux** :
+
 - `GET /api` - Health check
 - `POST /api/auth/register` - Inscription
 - `POST /api/auth/login` - Connexion
@@ -558,6 +584,7 @@ L'API backend est accessible sur `/api` et retourne du JSON.
 ### Base de données
 
 **Schéma initial** (géré par TypeORM) :
+
 - `users` - Utilisateurs
 - `treasures` - Chasses au trésor
 - `waypoints` - Points de passage
