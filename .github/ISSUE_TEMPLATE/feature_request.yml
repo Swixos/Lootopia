@@ -1,0 +1,107 @@
+name: ✨ Feature Request
+description: Proposer une nouvelle fonctionnalité
+title: "[Feature]: "
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Merci de proposer cette amélioration !
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description de la fonctionnalité
+      description: Une description claire et concise de la fonctionnalité souhaitée
+      placeholder: Décrivez la fonctionnalité...
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problème résolu
+      description: Quel problème cette fonctionnalité résout-elle ?
+      placeholder: |
+        Je suis toujours frustré quand [...]
+        Cette feature permettrait de [...]
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Solution proposée
+      description: Comment imaginez-vous cette fonctionnalité ?
+      placeholder: |
+        Je propose d'ajouter [...]
+        Cela fonctionnerait comme suit : [...]
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considérées
+      description: Avez-vous envisagé d'autres solutions ?
+      placeholder: |
+        J'ai aussi pensé à [...]
+        Mais je préfère la solution principale car [...]
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Composant concerné
+      description: Quelle partie de l'application serait affectée ?
+      options:
+        - Frontend (Angular)
+        - Backend (NestJS)
+        - Base de données
+        - Docker / Infrastructure
+        - CI/CD
+        - Documentation
+        - Autre
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priorité
+      description: Quelle est l'importance de cette fonctionnalité ?
+      options:
+        - Critique (bloque l'utilisation)
+        - Haute (très utile)
+        - Moyenne (amélioration appréciable)
+        - Basse (nice to have)
+    validations:
+      required: true
+
+  - type: textarea
+    id: mockups
+    attributes:
+      label: Mockups / Screenshots
+      description: Si applicable, ajouter des mockups ou screenshots
+      placeholder: |
+        Glisser-déposer les images ici...
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Contexte additionnel
+      description: Toute autre information pertinente
+      placeholder: |
+        Liens vers des exemples, références, etc...
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      description: Avez-vous vérifié les points suivants ?
+      options:
+        - label: J'ai recherché dans les issues existantes
+          required: true
+        - label: J'ai vérifié que ce n'est pas déjà documenté
+          required: true
+        - label: Je suis prêt à contribuer à l'implémentation
+          required: false

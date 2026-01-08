@@ -1,0 +1,172 @@
+name: Deploy to Production
+
+on:
+  # Déclenchement manuel
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+
+  # Déclenchement sur tags de version
+  push:
+    tags:
+      - 'v*.*.*'
+
+env:
+  NODE_VERSION: '20.x'
+  PNPM_VERSION: '8.15.0'
+  REGISTRY: ghcr.io
+  IMAGE_NAME_BACKEND: ${{ github.repository }}/backend
+  IMAGE_NAME_FRONTEND: ${{ github.repository }}/frontend
+
+jobs:
+  # Build et Push des images Docker vers GitHub Container Registry
+  build-and-push:
+    name: Build and Push Docker Images
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata for backend
+        id: meta-backend
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BACKEND }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,prefix={{branch}}-
+
+      - name: Build and push backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/backend/Dockerfile
+          push: true
+          tags: ${{ steps.meta-backend.outputs.tags }}
+          labels: ${{ steps.meta-backend.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Extract metadata for frontend
+        id: meta-frontend
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_FRONTEND }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,prefix={{branch}}-
+
+      - name: Build and push frontend image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: apps/frontend/Dockerfile
+          push: true
+          tags: ${{ steps.meta-frontend.outputs.tags }}
+          labels: ${{ steps.meta-frontend.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Déploiement (à adapter selon votre infrastructure)
+  deploy:
+    name: Deploy to ${{ github.event.inputs.environment || 'production' }}
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    environment:
+      name: ${{ github.event.inputs.environment || 'production' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Option 1: Déploiement via SSH
+      # Décommenter et configurer les secrets si vous utilisez cette méthode
+      # - name: Deploy via SSH
+      #   uses: appleboy/ssh-action@v1.0.0
+      #   with:
+      #     host: ${{ secrets.DEPLOY_HOST }}
+      #     username: ${{ secrets.DEPLOY_USER }}
+      #     key: ${{ secrets.DEPLOY_KEY }}
+      #     script: |
+      #       cd /path/to/lootopia
+      #       docker-compose -f docker-compose.prod.yml pull
+      #       docker-compose -f docker-compose.prod.yml up -d
+      #       docker-compose -f docker-compose.prod.yml exec backend pnpm run migration:run
+
+      # Option 2: Déploiement sur cloud provider (AWS, GCP, Azure, etc.)
+      # À configurer selon votre provider
+
+      # Option 3: Notification de déploiement
+      - name: Deployment notification
+        run: |
+          echo "🚀 Deployment to ${{ github.event.inputs.environment || 'production' }} initiated"
+          echo "Backend image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_BACKEND }}"
+          echo "Frontend image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_FRONTEND }}"
+
+      # IMPORTANT: Remplacer cette étape par votre vraie logique de déploiement
+      # Exemples:
+      # - kubectl apply -f k8s/ (pour Kubernetes)
+      # - aws ecs update-service (pour AWS ECS)
+      # - docker-compose pull && docker-compose up -d (pour serveur Docker)
+      - name: Deploy placeholder
+        run: |
+          echo "⚠️  Configure your deployment strategy here"
+          echo "See .github/workflows/deploy.yml for examples"
+
+  # Health check après déploiement
+  health-check:
+    name: Health Check
+    runs-on: ubuntu-latest
+    needs: deploy
+    steps:
+      # À adapter selon votre URL de production
+      # - name: Check backend health
+      #   run: |
+      #     curl -f https://api.lootopia.com/api/health || exit 1
+
+      # - name: Check frontend health
+      #   run: |
+      #     curl -f https://lootopia.com || exit 1
+
+      - name: Health check placeholder
+        run: |
+          echo "✅ Configure health checks for your production URLs"
+          echo "Example: curl -f https://api.lootopia.com/api/health"
+
+  # Notification de succès
+  success:
+    name: Deployment Success
+    runs-on: ubuntu-latest
+    needs: [deploy, health-check]
+    if: success()
+    steps:
+      - name: Success notification
+        run: |
+          echo "✅ Deployment completed successfully!"
+          echo "Environment: ${{ github.event.inputs.environment || 'production' }}"
+          echo "Version: ${{ github.ref_name }}"

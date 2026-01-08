@@ -1,5 +1,12 @@
 # 🏆 Lootopia
 
+[![CI/CD Pipeline](https://github.com/Swixos/Lootopia/workflows/CI%2FCD%20Pipeline/badge.svg)](https://github.com/Swixos/Lootopia/actions/workflows/ci.yml)
+[![Security Checks](https://github.com/Swixos/Lootopia/workflows/Security%20Checks/badge.svg)](https://github.com/Swixos/Lootopia/actions/workflows/security.yml)
+[![Deploy](https://github.com/Swixos/Lootopia/workflows/Deploy%20to%20Production/badge.svg)](https://github.com/Swixos/Lootopia/actions/workflows/deploy.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen)](https://nodejs.org/)
+[![pnpm](https://img.shields.io/badge/pnpm-%3E%3D8.0.0-orange)](https://pnpm.io/)
+
 **Plateforme de chasses au trésor numériques** - Projet Mastère Développement Full Stack
 
 Lootopia est une application innovante mêlant géolocalisation, gamification et réalité augmentée pour créer des expériences de chasses au trésor interactives.
@@ -13,6 +20,7 @@ Lootopia est une application innovante mêlant géolocalisation, gamification et
 - [Utilisation](#-utilisation)
 - [Développement](#-développement)
 - [Tests](#-tests)
+- [CI/CD](#-cicd)
 - [Déploiement](#-déploiement)
 - [Structure du projet](#-structure-du-projet)
 - [Bonnes pratiques](#-bonnes-pratiques)
@@ -304,6 +312,101 @@ pnpm --filter @lootopia/backend test:e2e
 ```bash
 pnpm test:cov
 ```
+
+## 🔄 CI/CD
+
+Le projet utilise **GitHub Actions** pour l'intégration et le déploiement continus.
+
+### Pipelines disponibles
+
+#### 1. CI/CD Pipeline (`.github/workflows/ci.yml`)
+**Automatique sur chaque push et PR**
+
+- ✅ Installation et cache des dépendances
+- ✅ Lint (ESLint + Prettier)
+- ✅ Tests unitaires (Backend + Frontend)
+- ✅ Tests e2e (Backend avec MariaDB)
+- ✅ Build de production
+- ✅ Build des images Docker (sur `main`)
+
+**Déclenchement** : Push sur `main`, `develop`, `claude/**` ou PR
+
+```bash
+# Voir l'état de la CI
+gh workflow view ci.yml
+
+# Lancer manuellement
+gh workflow run ci.yml
+```
+
+#### 2. Deploy Pipeline (`.github/workflows/deploy.yml`)
+**Déploiement en production**
+
+- 🐳 Build et push des images Docker vers GHCR
+- 🚀 Déploiement vers production/staging
+- ✅ Health checks post-déploiement
+
+**Déclenchement** :
+- Manuel via `workflow_dispatch`
+- Tags de version (`v*.*.*`)
+
+```bash
+# Déployer manuellement
+gh workflow run deploy.yml -f environment=production
+
+# Créer une release
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+#### 3. Security Pipeline (`.github/workflows/security.yml`)
+**Analyses de sécurité automatiques**
+
+- 🔒 Audit des dépendances (`pnpm audit`)
+- 🔍 CodeQL - Analyse statique du code
+- 🔐 TruffleHog - Détection de secrets
+- 📜 Vérification des licences
+- 🛡️ Snyk - Vulnérabilités (optionnel)
+- 🔎 OWASP Dependency Check (optionnel)
+
+**Déclenchement** :
+- Push/PR sur `main` ou `develop`
+- Hebdomadaire (lundi 8h)
+- Manuel
+
+```bash
+# Lancer le scan de sécurité
+gh workflow run security.yml
+```
+
+### Dependabot
+
+Configuration automatique des mises à jour :
+- 📦 Dépendances npm/pnpm (hebdomadaire)
+- 🔧 GitHub Actions (hebdomadaire)
+- 🐳 Images Docker (hebdomadaire)
+
+Les PRs sont créées automatiquement chaque lundi à 8h.
+
+### Artifacts
+
+Les pipelines génèrent des artifacts :
+- `backend-coverage` - Couverture de code backend
+- `frontend-coverage` - Couverture de code frontend
+- `backend-build` - Build compilé du backend
+- `frontend-build` - Build compilé du frontend
+
+### Configuration
+
+**Secrets requis pour le déploiement** (optionnel) :
+```
+DEPLOY_HOST       # Serveur de déploiement
+DEPLOY_USER       # Utilisateur SSH
+DEPLOY_KEY        # Clé SSH privée
+SNYK_TOKEN        # Token Snyk (si activé)
+```
+
+**Documentation complète** : [.github/CICD.md](.github/CICD.md)
 
 ## 🚢 Déploiement
 
