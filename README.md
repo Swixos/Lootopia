@@ -190,7 +190,43 @@ pnpm run start:dev
 ```bash
 cd apps/frontend
 pnpm run dev
+
+# Ou en HTTPS (requis pour caméra/géolocalisation sur mobile)
+pnpm run dev:https
 ```
+
+### Mode HTTPS (pour caméra et géolocalisation)
+
+Pour accéder à la caméra et à la géolocalisation sur mobile, HTTPS est **obligatoire**.
+
+**Installation rapide** :
+
+```bash
+# 1. Installer mkcert
+# Windows (avec Chocolatey)
+choco install mkcert
+
+# macOS
+brew install mkcert
+
+# 2. Installer le certificat racine
+mkcert -install
+
+# 3. Générer les certificats (remplacer par votre IP locale)
+cd apps/frontend/ssl
+mkcert localhost 127.0.0.1 ::1 192.168.1.10
+
+# 4. Démarrer en HTTPS
+cd ../..
+pnpm dev:https
+```
+
+**Accès** :
+
+- 🔒 **https://localhost:4200** (depuis votre PC)
+- 🔒 **https://192.168.x.x:4200** (depuis votre téléphone sur le même WiFi)
+
+**Documentation complète** : [apps/frontend/ssl/README.md](apps/frontend/ssl/README.md)
 
 ### Scripts disponibles
 

@@ -7,6 +7,7 @@
   "scripts": {
     "ng": "ng",
     "dev": "ng serve --host 0.0.0.0 --port 4200",
+    "dev:https": "ng serve --configuration https",
     "start": "ng serve",
     "build": "ng build",
     "build:prod": "ng build --configuration production",
