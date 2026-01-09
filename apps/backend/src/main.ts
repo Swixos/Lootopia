@@ -26,6 +26,12 @@ async function bootstrap() {
   const port = process.env.PORT || 3000;
   await app.listen(port);
 
-  console.log(`🚀 Lootopia Backend API is running on: http://localhost:${port}/api`);
+  console.log(
+    `🚀 Lootopia Backend API is running on: http://localhost:${port}/api`,
+  );
 }
-bootstrap();
+
+bootstrap().catch((error) => {
+  console.error('Failed to start application:', error);
+  process.exit(1);
+});

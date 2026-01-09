@@ -1,0 +1,5 @@
+# Certificats SSL locaux (ne pas committer)
+*.pem
+*.key
+*.crt
+*.cert

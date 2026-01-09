@@ -47,6 +47,7 @@ git checkout -b fix/correction-bug
 ```
 
 **Convention de nommage des branches** :
+
 - `feature/` - Nouvelles fonctionnalités
 - `fix/` - Corrections de bugs
 - `refactor/` - Refactoring de code
@@ -173,6 +174,7 @@ class userService {}
 ### Principes SOLID
 
 Respectez les principes SOLID dans votre code :
+
 - **S**ingle Responsibility
 - **O**pen/Closed
 - **L**iskov Substitution
@@ -288,6 +290,7 @@ it('should work', () => {
 Format : `<type>(<scope>): <description>`
 
 **Types** :
+
 - `feat` - Nouvelle fonctionnalité
 - `fix` - Correction de bug
 - `docs` - Documentation uniquement
@@ -337,31 +340,40 @@ git commit -m "updated stuff"
 
 ```markdown
 ## Description du bug
+
 Description claire et concise du bug
 
 ## Étapes pour reproduire
+
 1. Aller sur '...'
 2. Cliquer sur '...'
 3. Voir l'erreur
 
 ## Comportement attendu
+
 Ce qui devrait se passer
 
 ## Comportement actuel
+
 Ce qui se passe actuellement
 
 ## Screenshots
+
 Si applicable
 
 ## Environnement
+
 - OS: [e.g. Windows 11]
 - Browser: [e.g. Chrome 120]
 - Version: [e.g. v1.0.0]
 
 ## Logs
 ```
+
 Logs d'erreur pertinents
+
 ```
+
 ```
 
 ## 💡 Proposer des fonctionnalités
@@ -370,18 +382,23 @@ Logs d'erreur pertinents
 
 ```markdown
 ## Description de la fonctionnalité
+
 Description claire de la fonctionnalité souhaitée
 
 ## Problème résolu
+
 Quel problème cette feature résout-elle ?
 
 ## Solution proposée
+
 Comment imaginez-vous cette feature ?
 
 ## Alternatives considérées
+
 Quelles autres solutions avez-vous envisagées ?
 
 ## Contexte additionnel
+
 Screenshots, mockups, etc.
 ```
 
@@ -396,6 +413,7 @@ Screenshots, mockups, etc.
 ## ❓ Questions
 
 Si vous avez des questions :
+
 - Ouvrir une discussion sur GitHub Discussions
 - Contacter les mainteneurs
 - Consulter la documentation
